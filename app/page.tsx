@@ -1,103 +1,93 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import Navbar from "./components/Navbar";
 import Image from "next/image";
+import { api } from "@/config/api.config";
+import ProductCard from "./components/ProductCard";
+import { IProduct } from "@/interfaces";
+import Footer from "./components/Footer";
+import { Search } from "lucide-react";
 
 export default function Home() {
+  // Queries
+  const { data: categories, isSuccess: isCatSuccess } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      try {
+        const { data: res } = await api.get("/categories");
+        console.log("categories");
+        console.log(res.data);
+        return res.data ?? [];
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+  });
+  const { data: products, isSuccess: isProdSuccess } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      try {
+        const { data: res } = await api.get("/products?limit=12");
+        console.log("products");
+        console.log(res);
+        return res.data ?? [];
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+  });
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+    <header className="max-h-screen">
+      <Navbar></Navbar>
+      <div className="relative w-full h-[300px]  lg:h-[400px]">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
+          fill
+          alt="shopping-img"
+          src="/header1.jpg"
+          className="object-fill md:object-cover"
           priority
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+      </div>
+      {/* { categories} */}
+      <div className="px-6 md:w-4/5 mx-auto my-7 flex flex-wrap gap-5 items-center">
+        <p className="font-semibold text-lg">Categories:</p>
+        {isCatSuccess &&
+          categories.map((category: { name: string; _id: number }) => (
+            <p
+              key={category._id}
+              className="text-lg px-2 py-1 rounded-2xl bg-[#e8f0db]"
+            >
+              {category.name}
+            </p>
+          ))}
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* { products} */}
+      <div className="w-5/6 lg:w-3/4 mx-auto mt-10 mb-20 flex flex-col gap-10 items-center">
+        <p className="font-semibold text-3xl text-[#98c757] self-start">
+          Products:
+        </p>
+        <div className="w-3/4 mx-auto flex gap-2 items-center rounded-2xl bg-[#e8f0db] px-3 py-2 h-fit">
+          <Search className="text-[#79ac31]"></Search>
+          <input type="text" placeholder="Search..."  className="focus:outline-none flex-1"/>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <div className="grid grid-cols-1 gap-15 md:grid-cols-2 md:gap-15 lg:grid-cols-3 lg:gap-10 xl:grid-cols-4 xl:gap-10 mx-10 sm:mx-30 md:mx-5 items-stretch">
+          {isProdSuccess &&
+            products.map((product: IProduct) => (
+              <div
+                className="hover:scale-105 transition-all duration-300"
+                key={product.id}
+              >
+                <ProductCard product={product} />
+              </div>
+            ))}
+        </div>
+      </div>
+      <Footer />
+    </header>
   );
 }
