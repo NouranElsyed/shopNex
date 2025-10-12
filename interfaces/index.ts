@@ -10,3 +10,15 @@ export interface IProduct {
   slug?: string;
   title: string;
 }
+export interface IAxiosError {
+
+     message?:string
+
+
+}
+
+export interface IUser {
+  name: string,
+  email: string,
+  role: string
+}

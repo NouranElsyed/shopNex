@@ -3,18 +3,17 @@
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { api } from "@/config/api.config";
-import ProductCard from "./components/ProductCard";
-import { IProduct } from "@/interfaces";
-import { Search } from "lucide-react";
+import ProductCard from "./_components/ProductCard";
+import { IAxiosError, IProduct } from "@/interfaces";
 import Loading from "@/components/ui/Loading";
-import {
-  SearchIcon,
-} from "lucide-react"
+import { SearchIcon } from "lucide-react";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group"
+} from "@/components/ui/input-group";
+import { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 export default function Home() {
   // Queries
@@ -27,12 +26,25 @@ export default function Home() {
     queryFn: async () => {
       try {
         const { data: res } = await api.get("/categories");
-        console.log("categories");
-        console.log(res.data);
         return res.data ?? [];
       } catch (error) {
-        console.log(error);
-        throw error;
+        const AxiosErr = error as AxiosError<IAxiosError>;
+        toast(
+          `❕${AxiosErr?.response?.data?.message || "Something went wrong"}`,
+          {
+            position: "top-right",
+            autoClose: 4000,
+            theme: "colored",
+            style: {
+              width: "100%",
+              textAlign: "center",
+              backgroundColor: "#EF5350",
+              color: "white",
+              fontWeight: "500",
+              margin: "0 8px ",
+            },
+          }
+        );
       }
     },
   });
@@ -45,12 +57,25 @@ export default function Home() {
     queryFn: async () => {
       try {
         const { data: res } = await api.get("/products?limit=12");
-        console.log("products");
-        console.log(res);
         return res.data ?? [];
       } catch (error) {
-        console.log(error);
-        throw error;
+        const AxiosErr = error as AxiosError<IAxiosError>;
+        toast(
+          `❕${AxiosErr?.response?.data?.message || "Something went wrong"}`,
+          {
+            position: "top-right",
+            autoClose: 4000,
+            theme: "colored",
+            style: {
+              width: "100%",
+              textAlign: "center",
+              backgroundColor: "#EF5350",
+              color: "white",
+              fontWeight: "500",
+              margin: "0 8px ",
+            },
+          }
+        );
       }
     },
   });
@@ -96,13 +121,14 @@ export default function Home() {
               </InputGroup>
             </div>
             {
-              <div className=
-              {`w-5/7 grid grid-cols-1 gap-10 mx-15
+              <div
+                className={`w-5/7 grid grid-cols-1 gap-10 mx-15
               sm:grid-cols-2 sm:gap-5 sm:mx-0 
               md:w-9/10 md:grid-cols-3 md:gap-8 md:mx-0 
               lg:grid-cols-3 lg:gap-10 
               xl:grid-cols-4 xl:gap-10    
-              items-stretch`}>
+              items-stretch`}
+              >
                 {isProdSuccess &&
                   products.map((product: IProduct) => (
                     <div

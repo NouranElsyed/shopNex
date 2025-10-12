@@ -7,7 +7,6 @@ interface IProps {
 const RatingStars = ({ ratingsQuantity, rating }: IProps) => {
   const fraction = rating - Math.floor(rating);
   const remainFraction = (1 - fraction) * 100;
-  console.log(ratingsQuantity, rating);
   return (
     <div className="flex justify-center items-center">
       {[...Array(Math.floor(rating))].map((_, index) => (

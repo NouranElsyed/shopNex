@@ -1,4 +1,5 @@
-import { MotionButton } from "@/components/ui/MotionButton";
+
+import { AnimatedButton } from "@/components/ui/MotionButton";
 import RatingStars from "@/components/ui/RatingStars";
 import { IProduct } from "@/interfaces";
 import { truncateText } from "@/utils/truncateText";
@@ -39,7 +40,7 @@ const ProductCard = ({ product }: IProps) => {
           </span>
         </p>
         <RatingStars rating={ratingsAverage} ratingsQuantity={ratingsQuantity}></RatingStars>
-        <MotionButton className="self-center my-5">Add to cart</MotionButton>
+        <AnimatedButton className="self-center my-5">Add to cart</AnimatedButton>
       </div>
      {
       inWishList ?  <Heart
