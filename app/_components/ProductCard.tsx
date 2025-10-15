@@ -1,21 +1,30 @@
-
-import { AnimatedButton } from "@/components/ui/MotionButton";
+import AddToCart from "@/components/ui/customButton/AddToCart";
 import RatingStars from "@/components/ui/RatingStars";
 import { IProduct } from "@/interfaces";
+import { useWishListStore } from "@/store/wishList.store";
 import { truncateText } from "@/utils/truncateText";
 import { Heart } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo } from "react";
 interface IProps {
   product: IProduct;
 }
 const ProductCard = ({ product }: IProps) => {
-  const { imageCover, title, description, price ,ratingsQuantity , ratingsAverage} = product;
+  const {
+    id,
+    imageCover,
+    title,
+    description,
+    price,
+    ratingsQuantity,
+    ratingsAverage,
+  } = product;
+  const { toggleWishList, wishList } = useWishListStore();
 
-  const [inWishList, setInWishList] = useState(false);
-  const addToWhishList = () => {
-    setInWishList((prev)=>!prev);
-  };
+  const inWishList = useMemo(
+    () => wishList?.data?.some((item) => item.id === product.id),
+    [wishList, product.id]
+  );
   return (
     <div className="product relative flex flex-col justify-between rounded-xl overflow-hidden h-full border-1 transition-all duration-500 border-[#79ac318a] hover:shadow-md hover:shadow-[#79ac31] ">
       <div className="flex flex-col w-full items-center">
@@ -39,21 +48,26 @@ const ProductCard = ({ product }: IProps) => {
             {price} <span className="text-amber-400">$</span>{" "}
           </span>
         </p>
-        <RatingStars rating={ratingsAverage} ratingsQuantity={ratingsQuantity}></RatingStars>
-        <AnimatedButton className="self-center my-5">Add to cart</AnimatedButton>
+        <RatingStars
+          rating={ratingsAverage}
+          ratingsQuantity={ratingsQuantity}
+        ></RatingStars>
+        <AddToCart productId={id}></AddToCart>
       </div>
-     {
-      inWishList ?  <Heart
-      fill="#db1a00"
-      size={27}
-        onClick={addToWhishList}
-        className="absolute top-3 right-3 text-[#db1a00] heart opacity-0"
-      /> :  <Heart
-        onClick={addToWhishList}
-        size={27}
-        className="absolute top-3 right-3 text-[#79ac31] hover:text-[#db1a00] heart opacity-0"
-      />
-     }
+      {inWishList ? (
+        <Heart
+          fill="#db1a00"
+          size={27}
+          onClick={() => toggleWishList(id)}
+          className="absolute top-3 right-3 text-[#db1a00] heart opacity-0"
+        />
+      ) : (
+        <Heart
+          onClick={() => toggleWishList(id)}
+          size={27}
+          className="absolute top-3 right-3 text-[#79ac31] hover:text-[#db1a00] heart opacity-0"
+        />
+      )}
     </div>
   );
 };

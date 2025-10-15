@@ -15,16 +15,19 @@ import {
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { api } from "@/config/api.config";
-import { AnimatedButton } from "@/components/ui/MotionButton";
+import { AnimatedButton } from "@/components/ui/customButton/MotionButton";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { IAxiosError } from "@/interfaces";
+import Link from "next/link";
+import { useUserStore } from "@/store/user.store";
 interface MyFormValues {
   email: string;
   password: string;
 }
 const Login = () => {
   const router = useRouter();
+  const {setUser} = useUserStore()
   const formik = useFormik<MyFormValues>({
     initialValues: {
       email: "",
@@ -38,11 +41,12 @@ const Login = () => {
         console.log(user);
         const token = res.data.token;
         console.log(token);
-        await fetch('/api/set-token',{
-          method:"POST",
-          headers:{ "Content-Type": "application/json" },
-          body: JSON.stringify({token,user})
-        })
+        await fetch("/api/set-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, user }),
+        });
+        setUser(user)
         router.push("/");
         toast("Welcome back 🎉", {
           position: "top-center",
@@ -54,12 +58,13 @@ const Login = () => {
             backgroundColor: "#79ac31b7",
             color: "white",
             fontWeight: "500",
-            margin: "0 8px ",
+            margin: "7px 0px ",
           },
         });
       } catch (error) {
+        console.log(error)
         const AxiosErr = error as AxiosError<IAxiosError>;
-        console.log(AxiosErr?.response?.data?.message);
+        console.log(AxiosErr?.response);
         toast(
           `❕${AxiosErr?.response?.data?.message || "Something went wrong"}`,
           {
@@ -72,7 +77,7 @@ const Login = () => {
               backgroundColor: "#EF5350",
               color: "white",
               fontWeight: "500",
-              margin: "0 8px ",
+              margin: "7px 0px ",
             },
           }
         );
@@ -144,10 +149,15 @@ const Login = () => {
           </InputGroup>
           <AnimatedButton type="submit">submit</AnimatedButton>
         </form>
+        <p className="text-sm mt-5">
+          I haven&apos;t an account{" "}
+          <Link href="/register" className="underline text-[#79ac31]">
+            signup
+          </Link>
+        </p>
       </div>
     </div>
   );
 };
 
 export default Login;
-

@@ -41,7 +41,7 @@ export default function Home() {
               backgroundColor: "#EF5350",
               color: "white",
               fontWeight: "500",
-              margin: "0 8px ",
+              margin: "7px 0",
             },
           }
         );
@@ -72,7 +72,7 @@ export default function Home() {
               backgroundColor: "#EF5350",
               color: "white",
               fontWeight: "500",
-              margin: "0 8px ",
+              margin: "7 0px",
             },
           }
         );

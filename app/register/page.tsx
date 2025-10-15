@@ -15,10 +15,11 @@ import {
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { api } from "@/config/api.config";
-import { AnimatedButton } from "@/components/ui/MotionButton";
+import { AnimatedButton } from "@/components/ui/customButton/MotionButton";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { IAxiosError } from "@/interfaces";
+import Link from "next/link";
 interface MyFormValues {
   name: string;
   email: string;
@@ -37,6 +38,8 @@ const Register = () => {
       phone: "",
     },
     onSubmit: async (values) => {
+      console.log(values);
+
       try {
         console.log(values);
         const res = await api.post("/auth/signup", values);
@@ -65,7 +68,7 @@ const Register = () => {
         });
       } catch (error) {
         const AxiosErr = error as AxiosError<IAxiosError>;
-        console.log(AxiosErr?.response?.data?.message);
+        console.log(AxiosErr?.response);
         toast(
           `❕${AxiosErr?.response?.data?.message || "Something went wrong"}`,
           {
@@ -88,15 +91,15 @@ const Register = () => {
 
   return (
     <div className="flex-1 max-h-screen  w-full flex justify-center items-center">
-      <div className="flex flex-col  justify-center items-center w-full mx-5 sm:w-9/10 md:w-4/5 lg:w-3/7 p-10 bg-[#79ac310b] shadow-md shadow-[#4c70195e]">
-        <h1 className="text-3xl font-semibold text-[#79ac31]">Login</h1>
+      <div className="flex flex-col  justify-center items-center w-full mx-5 sm:w-9/10 md:w-4/5 lg:w-3/7 px-10 py-5 bg-[#79ac310b] shadow-md shadow-[#4c70195e]">
+        <h1 className="text-3xl font-semibold text-[#79ac31]">Register</h1>
 
         <form
           onSubmit={(e) => {
             e.preventDefault();
             formik.handleSubmit();
           }}
-          className="flex flex-col justify-center items-center w-full  gap-6 mt-10"
+          className="flex flex-col justify-center items-center w-full  gap-5 mt-5"
         >
           <InputGroup className="h-12 text-md border-2 ">
             <InputGroupInput
@@ -173,13 +176,13 @@ const Register = () => {
               </Tooltip>
             </InputGroupAddon>
           </InputGroup>
-           <InputGroup className="h-12 text-md border-2 ">
+          <InputGroup className="h-12 text-md border-2 ">
             <InputGroupInput
               name="rePassword"
               placeholder="Confirm your password"
               type="password"
               onChange={formik.handleChange}
-              value={formik.values.password}
+              value={formik.values.rePassword}
             />
             <InputGroupAddon align="inline-end">
               <Tooltip>
@@ -198,13 +201,13 @@ const Register = () => {
               </Tooltip>
             </InputGroupAddon>
           </InputGroup>
-           <InputGroup className="h-12 text-md border-2 ">
+          <InputGroup className="h-12 text-md border-2 ">
             <InputGroupInput
-              name="rePassword"
-              placeholder="Confirm your password"
-              type="password"
+              name="phone"
+              placeholder="your phone number"
+              type="number"
               onChange={formik.handleChange}
-              value={formik.values.password}
+              value={formik.values.phone}
             />
             <InputGroupAddon align="inline-end">
               <Tooltip>
@@ -225,6 +228,12 @@ const Register = () => {
           </InputGroup>
           <AnimatedButton type="submit">submit</AnimatedButton>
         </form>
+        <p className="text-sm mt-5">
+          I have an account{" "}
+          <Link href="/register" className="underline text-[#79ac31]">
+            login
+          </Link>
+        </p>
       </div>
     </div>
   );
