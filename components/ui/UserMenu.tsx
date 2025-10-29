@@ -46,7 +46,7 @@ const UserMenu = () => {
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
-    <div className="flex gap-3 items-center text-[#79ac31] relative">
+    <div className="flex gap-3 items-center text-[#79ac31]  relative">
       {(!user && (
         <Link href="/login">
           <AnimatedButton>Login</AnimatedButton>
@@ -62,7 +62,7 @@ const UserMenu = () => {
           </div>
 
           <div className="hidden md:flex gap-3 items-center">
-             <p className="text-sm font-semibold">
+             <p className="text-xs lg:text-sm font-semibold">
               Hello, <span>{user?.name.split(" ")[0]}</span>
             </p>
             <div className="relative cursor-pointer" onClick={goToWishList}>
@@ -71,12 +71,12 @@ const UserMenu = () => {
                   key={wishCount}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
+                  className="absolute -top-1 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
                 >
                   {wishCount}
                 </motion.span>
               )}
-              <Heart className="text-[#db1a00]" size={25} />
+              <Heart className="text-[#db1a00]" size={23} />
             </div>
 
             <div className="relative cursor-pointer" onClick={getCart}>
@@ -90,7 +90,7 @@ const UserMenu = () => {
                   {itemCount}
                 </motion.span>
               )}
-              <ShoppingBag size={27} />
+              <ShoppingBag size={25} />
             </div>
 
            
@@ -182,7 +182,6 @@ const UserMenu = () => {
                       router.push("/brands");
                     }}
                   >
-                    {/* <ShoppingBag size={18} /> */}
                     <Ribbon size={18} />
                     <span>Brands</span>
                   </div>

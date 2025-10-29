@@ -113,14 +113,7 @@ export default function Home() {
             <p className="font-semibold text-3xl text-[#98c757] self-start">
               Products:
             </p>
-            <div className="w-5/6 md:w-3/4 mx-auto flex gap-2 items-center rounded-lg bg-[#e8f0db] h-fit">
-              <InputGroup>
-                <InputGroupInput placeholder="Search..." />
-                <InputGroupAddon>
-                  <SearchIcon />
-                </InputGroupAddon>
-              </InputGroup>
-            </div>
+           
             {
               <div
                 className={`w-5/7 grid grid-cols-1 gap-10 mx-15

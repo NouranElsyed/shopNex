@@ -1,123 +1,224 @@
 "use client";
+
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { toast } from "react-toastify";
+import { Pagination, PaginationProps } from "antd";
+import { SearchIcon, ArrowBigRight } from "lucide-react";
+
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { IAxiosError, IProduct } from "@/interfaces";
-import { SearchIcon } from "lucide-react";
-import React, { useState } from "react";
-import ProductCard from "../_components/ProductCard";
+import { AnimatedButton } from "@/components/ui/customButton/MotionButton";
 import Loading from "@/components/ui/Loading";
+import ProductCard from "../_components/ProductCard";
 import { api } from "@/config/api.config";
-import { AxiosError } from "axios";
-import { toast } from "react-toastify";
-import { useQuery } from "@tanstack/react-query";
-import { Pagination, PaginationProps } from "antd";
+import { IAxiosError, IProduct } from "@/interfaces";
+
+// ========================
+// Types
+// ========================
+interface ProductData {
+  products: IProduct[] | null;
+  totalItems: number;
+  totalPages: number;
+}
+
+// ========================
+// Main Component
+// ========================
 const Products = () => {
+  // --- State ---
+  const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const [data, setData] = useState<ProductData>({
+    products: null,
+    totalItems: 0,
+    totalPages: 1,
+  });
+
+  // --- Fetch Products with Pagination ---
   const {
-    data:  resData,
-    isSuccess: isProdSuccess,
+    data: resData,
     isLoading: isProdLoading,
+    isSuccess: isProdSuccess,
   } = useQuery({
-    queryKey: ["products",currentPage],
+    queryKey: ["products", currentPage],
     queryFn: async () => {
       const params = new URLSearchParams({
-        limit: "16", 
+        limit: "16",
         page: currentPage.toString(),
       });
+
       try {
         const { data: res } = await api.get(`/products?${params}`);
-        console.log(res.data)
-        // setTotalItems(res.total || 0);
-        return res ?? [];
+        return res;
       } catch (error) {
-        const AxiosErr = error as AxiosError<IAxiosError>;
-        toast(
-          `❕${AxiosErr?.response?.data?.message || "Something went wrong"}`,
+        const err = error as AxiosError<IAxiosError>;
+        toast.error(
+          `❕ ${err.response?.data?.message || "Something went wrong"}`,
           {
             position: "top-right",
             autoClose: 4000,
             theme: "colored",
             style: {
-              width: "100%",
-              textAlign: "center",
               backgroundColor: "#EF5350",
               color: "white",
               fontWeight: "500",
-              margin: "7 0px",
+              textAlign: "center",
             },
           }
         );
-        return  { data: [], results: 0 };
+        return { data: [], results: 0 };
       }
     },
   });
-  if (isProdLoading) return <Loading />;
 
-const products = resData?.data ?? [];
-  const totalItems = resData?.results ?? 0;
-  const totalPages = resData?.metadata?.numberOfPages ?? 1;
+  // --- Sync resData → local data state ---
+  useEffect(() => {
+    if (resData) {
+      setData({
+        products: resData.data ?? [],
+        totalItems: resData.results ?? 0,
+        totalPages: resData.metadata?.numberOfPages ?? 1,
+      });
+    }
+  }, [resData]);
 
-  const handlePaginationChange: PaginationProps['onChange'] = (page) => {
+  // --- Pagination Handler ---
+  const handlePaginationChange: PaginationProps["onChange"] = (page) => {
     setCurrentPage(page);
   };
-  return (
-    <>
-      <div className="w-7/8 md:w-9/10 lg:w-5/6 mx-auto mt-10 mb-20 flex flex-col gap-10 items-center">
-        <p className="font-semibold text-3xl text-[#98c757] self-start">
-          Products:
-        </p>
-        <div className="w-5/6 md:w-3/4 mx-auto flex gap-2 items-center rounded-lg bg-[#e8f0db] h-fit">
-          <InputGroup>
-            <InputGroupInput placeholder="Search..." />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-          </InputGroup>
-        </div>
+
+  // --- Search Handler ---
+  const handleSearching = async () => {
+    const trimmedValue = searchValue.trim();
+
+    // --- set default if no search word ---
+    if (!trimmedValue) {
+      setData({
+        products: resData?.data ?? [],
+        totalItems: resData?.results ?? 0,
+        totalPages: resData?.metadata?.numberOfPages ?? 1,
+      });
+      setCurrentPage(1);
+      return;
+    }
+
+    try {
+      const { data: res } = await api.get(`/products?limit=50`);
+      const searchedProducts = res.data.filter((p: IProduct) =>
+        p.title.toLowerCase().includes(trimmedValue.toLowerCase())
+      );
+
+      setData({
+        products: searchedProducts,
+        totalItems: searchedProducts.length,
+        totalPages: 1,
+      });
+
+      setCurrentPage(1); 
+    } catch (error) {
+      const err = error as AxiosError<IAxiosError>;
+      toast.error(
+        `❕ ${err.response?.data?.message || "Something went wrong"}`,
         {
-          <>
+          position: "top-right",
+          autoClose: 4000,
+          theme: "colored",
+          style: {
+            backgroundColor: "#EF5350",
+            color: "white",
+            fontWeight: "500",
+            textAlign: "center",
+          },
+        }
+      );
+    }
+  };
+
+  // --- Loading State ---
+  if (isProdLoading) return <Loading />;
+
+  // --- Render ---
+  return (
+    <div className="w-8/12 md:w-9/10 lg:w-5/6 mx-auto mt-10 mb-20 flex flex-col gap-10 items-center">
+      {/* Title */}
+      <h1 className="font-semibold text-3xl text-[#98c757] self-start">
+        Products:
+      </h1>
+
+      {/* Search Bar */}
+      <div className="w-full md:w-3/4 mx-auto flex gap-2 items-center">
+        <InputGroup className="bg-[#e8f0db] flex-1">
+          <InputGroupInput
+            placeholder="Search..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearching()}
+          />
+          <InputGroupAddon>
+            <SearchIcon className="w-5 h-5" />
+          </InputGroupAddon>
+        </InputGroup>
+
+        <AnimatedButton
+          className="font-semibold p-3"
+          onClick={handleSearching}
+          aria-label="Search"
+        >
+          <ArrowBigRight className="w-6 h-6" />
+        </AnimatedButton>
+      </div>
+
+      {/* Products Grid */}
+      <div
+        className={`
+          w-full grid grid-cols-1 gap-8
+          sm:grid-cols-2 sm:gap-6
+          md:grid-cols-3 md:gap-8
+          lg:grid-cols-3 lg:gap-10
+          xl:grid-cols-4 xl:gap-10
+          items-stretch
+        `}
+      >
+        {/* No Products Found */}
+        {isProdSuccess && data.products?.length === 0 && (
+          <div className="col-span-full text-center py-20 rounded-lg">
+            <p className="text-xl text-[#c8e49f]">No products found.</p>
+          </div>
+        )}
+
+        {/* Product Cards */}
+        {isProdSuccess &&
+          data.products?.map((product) => (
             <div
-              className={`w-5/7 grid grid-cols-1 gap-10 mx-15
-              sm:grid-cols-2 sm:gap-5 sm:mx-0 
-              md:w-9/10 md:grid-cols-3 md:gap-8 md:mx-0 
-              lg:grid-cols-3 lg:gap-10 
-              xl:grid-cols-4 xl:gap-10    
-              items-stretch`}
+              key={product.id}
+              className="hover:scale-105 transition-transform duration-300"
             >
-              {isProdSuccess && products.length === 0 && (
-                <div className="text-center py-20 w-full bg-amber-100">
-                  <p className="text-xl text-[#c8e49f]">No products found.</p>
-                </div>
-              )}
-              {isProdSuccess &&
-                products.map((product: IProduct) => (
-                  <div
-                    className="hover:scale-101 transition-all duration-300"
-                    key={product.id}
-                  >
-                    <ProductCard product={product} />
-                  </div>
-                ))}
+              <ProductCard product={product} />
             </div>
-        {totalPages > 1 && (
+          ))}
+      </div>
+
+      {/* Pagination */}
+      {data.totalPages > 1 && (
         <div className="flex justify-center w-full mt-10">
           <Pagination
             current={currentPage}
-            total={totalItems}
-            pageSize={16} 
+            total={data.totalItems}
+            pageSize={16}
             onChange={handlePaginationChange}
             showSizeChanger={false}
             showQuickJumper={false}
           />
         </div>
       )}
-          </>
-        }
-      </div>
-    </>
+    </div>
   );
 };
 

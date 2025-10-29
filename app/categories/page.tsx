@@ -6,6 +6,7 @@ import { AxiosError } from 'axios';
 import React from 'react'
 import { toast } from 'react-toastify';
 import Image from "next/image";
+import Loading from '@/components/ui/Loading';
 
 const Categories = () => {
     const {
@@ -41,6 +42,7 @@ const Categories = () => {
     },
   });
   console.log(categories,isCatSuccess,isCatLoading)
+    if (isCatLoading) return <Loading />;
   return (
      <div className="w-7/8 md:w-9/10 lg:w-5/6 mx-auto mt-10 mb-20 flex flex-col gap-10 items-center">
         <p className="font-semibold text-3xl text-[#98c757] self-start">
