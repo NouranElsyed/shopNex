@@ -1,7 +1,15 @@
 "use client";
 import { AnimatedButton } from "@/components/ui/customButton/MotionButton";
 import LogoutButton from "@/components/ui/customButton/LogoutButton";
-import { Heart, LogOut, Menu, ShoppingBag } from "lucide-react";
+import {
+  Heart,
+  ListTree,
+  LogOut,
+  Menu,
+  Ribbon,
+  ShoppingBag,
+  ShoppingCart,
+} from "lucide-react";
 import Link from "next/link";
 import { useUserStore } from "@/store/user.store";
 import { useCartStore } from "@/store/cart.store";
@@ -18,11 +26,10 @@ const UserMenu = () => {
   const { fetchCart, cart } = useCartStore();
   const router = useRouter();
 
-
   const getCart = () => {
     router.push("/cart");
     fetchCart();
-    setMobileMenuOpen(false); 
+    setMobileMenuOpen(false);
   };
 
   const goToWishList = () => {
@@ -31,7 +38,9 @@ const UserMenu = () => {
     setMobileMenuOpen(false);
   };
 
-  const itemCount = user ? cart?.numOfCartItems ?? cart?.data?.products?.length ?? 0 : 0 ;
+  const itemCount = user
+    ? cart?.numOfCartItems ?? cart?.data?.products?.length ?? 0
+    : 0;
   const wishCount = user ? wishList?.count ?? 0 : 0;
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -44,7 +53,6 @@ const UserMenu = () => {
         </Link>
       )) || (
         <>
-      
           <div className="md:hidden">
             <Menu
               size={30}
@@ -53,20 +61,22 @@ const UserMenu = () => {
             />
           </div>
 
-   
           <div className="hidden md:flex gap-3 items-center">
+             <p className="text-sm font-semibold">
+              Hello, <span>{user?.name.split(" ")[0]}</span>
+            </p>
             <div className="relative cursor-pointer" onClick={goToWishList}>
               {wishCount > 0 && (
                 <motion.span
                   key={wishCount}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+                  className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
                 >
                   {wishCount}
                 </motion.span>
               )}
-              <Heart className="text-[#db1a00]" size={30} />
+              <Heart className="text-[#db1a00]" size={25} />
             </div>
 
             <div className="relative cursor-pointer" onClick={getCart}>
@@ -75,17 +85,15 @@ const UserMenu = () => {
                   key={itemCount}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+                  className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
                 >
                   {itemCount}
                 </motion.span>
               )}
-              <ShoppingBag size={32} />
+              <ShoppingBag size={27} />
             </div>
 
-            <p>
-              Hello, <span>{user?.name.split(" ")[0]}</span>
-            </p>
+           
             <LogoutButton />
           </div>
 
@@ -134,6 +142,49 @@ const UserMenu = () => {
                         {itemCount}
                       </span>
                     )}
+                  </div>
+                ),
+              },
+              {
+                key: "products",
+                label: (
+                  <div
+                    className="flex items-center gap-3 py-2 cursor-pointer rounded"
+                    onClick={() => {
+                      router.push("/products");
+                    }}
+                  >
+                    <ShoppingCart size={18} />
+                    <span>Our products</span>
+                  </div>
+                ),
+              },
+              {
+                key: "categories",
+                label: (
+                  <div
+                    className="flex items-center gap-3 py-2 cursor-pointer rounded"
+                    onClick={() => {
+                      router.push("/categories");
+                    }}
+                  >
+                    <ListTree size={18} />
+                    <span>Categories</span>
+                  </div>
+                ),
+              },
+              {
+                key: "brands",
+                label: (
+                  <div
+                    className="flex items-center gap-3 py-2 cursor-pointer rounded"
+                    onClick={() => {
+                      router.push("/brands");
+                    }}
+                  >
+                    {/* <ShoppingBag size={18} /> */}
+                    <Ribbon size={18} />
+                    <span>Brands</span>
                   </div>
                 ),
               },

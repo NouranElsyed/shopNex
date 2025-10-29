@@ -2,12 +2,19 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import UserMenu from "@/components/ui/UserMenu";
+import {
+  Heart,
+  ListTree,
+  LogOut,
+  Menu,
+  Ribbon,
+  ShoppingBag,
+  ShoppingCart,
+} from "lucide-react";
 
 const Navbar = async () => {
-
-
   return (
-    <nav className="px-5 py-3 flex justify-between">
+    <nav className="px-5 py-3 flex justify-between items-center">
       <Link
         href="/"
         className="flex gap-1 items-center hover:opacity-90 transition"
@@ -15,10 +22,33 @@ const Navbar = async () => {
         <Image width={40} height={50} alt={"logo"} src={"/logo.svg"}></Image>
         <h1 className="text-xl text-[#79ac31] font-bold">ShopNex</h1>
       </Link>
-      <div className="links">
-        <Link href="/products" className="text-[#79ac31] font-semibold hover:text-[#628e24]">Our products</Link>
-      </div>
-      <UserMenu ></UserMenu>
+      <ul className="links hidden  md:flex  md:gap-4  lg:gap-27 text-sm">
+        <li className="flex gap-2 items-center text-[#79ac31] font-semibold hover:text-[#628e24] hover:bg-[#bce089be] py-2 px-3 rounded-3xl transition-all duration-300">
+          <ShoppingCart size={18} />
+          <Link href="/products" className="">
+            Our products
+          </Link>
+        </li>
+        <li className="flex gap-2 items-center text-[#79ac31] font-semibold hover:text-[#628e24] hover:bg-[#bce089be] py-2 px-3 rounded-3xl transition-all duration-300">
+          <ListTree size={18} />
+          <Link
+            href="/categories"
+           
+          >
+            Categories
+          </Link>
+        </li>
+        <li className="flex gap-2 items-center text-[#79ac31] font-semibold hover:text-[#628e24] hover:bg-[#bce089be] py-2 px-3 rounded-3xl transition-all duration-300">
+  <Ribbon size={18}/>
+        <Link
+          href="/products"
+          
+        >
+          Brands
+        </Link>
+        </li>
+      </ul>
+      <UserMenu></UserMenu>
     </nav>
   );
 };
