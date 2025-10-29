@@ -2,6 +2,7 @@ import { ICart } from "@/interfaces";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { toast } from "react-toastify";
+import { useUserStore } from "./user.store";
 
 interface CartState {
   cart: ICart | null;
@@ -38,7 +39,6 @@ export const useCartStore = create<CartState>()(
 
         products[productIndex].count = newCount;
 
-        
         const newTotal = products.reduce(
           (sum, p) => sum + p.price * p.count,
           0
@@ -55,7 +55,6 @@ export const useCartStore = create<CartState>()(
           },
         });
 
-        
         try {
           const res = await fetch("/api/update-count", {
             method: "PUT",
@@ -67,7 +66,7 @@ export const useCartStore = create<CartState>()(
           if (response.status !== "success") throw new Error();
           toast.success(action === "plus" ? " Added!" : " Removed!");
         } catch (error) {
-          console.log(error)
+          console.log(error);
           await get().fetchCart();
           toast.error("❕ Update failed!");
         }
@@ -76,6 +75,13 @@ export const useCartStore = create<CartState>()(
       fetchCart: async () => {
         try {
           const res = await fetch("/api/get-cart", { method: "GET" });
+          if (res.status === 401) {
+            get().clearCart();
+            useUserStore.getState().setUser(null);
+            toast.error("Your login session has expired! Please log in again.");
+            window.location.href = "/login";
+            return;
+          }
           const data = await res.json();
           if (data?.status === "success") {
             set({ cart: data });
@@ -86,7 +92,6 @@ export const useCartStore = create<CartState>()(
       },
 
       clearCart: async () => {
-        
         set({ cart: null });
 
         try {

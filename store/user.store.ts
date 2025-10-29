@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware"
 interface UserState {
   user: IUser|null;
-  setUser: (userData: IUser) => void;
+  setUser: (userData: IUser|null) => void;
   clearUser: ()=> void;
 }
 

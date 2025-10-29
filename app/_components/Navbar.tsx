@@ -15,6 +15,9 @@ const Navbar = async () => {
         <Image width={40} height={50} alt={"logo"} src={"/logo.svg"}></Image>
         <h1 className="text-xl text-[#79ac31] font-bold">ShopNex</h1>
       </Link>
+      <div className="links">
+        <Link href="/products" className="text-[#79ac31] font-semibold hover:text-[#628e24]">Our products</Link>
+      </div>
       <UserMenu ></UserMenu>
     </nav>
   );

@@ -22,10 +22,17 @@ console.log(res)
     return NextResponse.json(res.data,
       { status: 200 }
     );
-  } catch (error) {
-    console.log(error);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }  catch (error:any) {
+    console.log(error)
+    if (error.response?.status === 401) {
+      return NextResponse.json(
+        { success: false, message: "Session expired" },
+        { status: 401 }
+      );
+    }
     return NextResponse.json(
-      { success: false, message: error },
+      { success: false, message: error.message },
       { status: 500 }
     );
   }

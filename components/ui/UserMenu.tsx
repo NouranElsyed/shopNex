@@ -31,8 +31,8 @@ const UserMenu = () => {
     setMobileMenuOpen(false);
   };
 
-  const itemCount = cart?.numOfCartItems ?? cart?.data?.products?.length ?? 0;
-  const wishCount = wishList?.count ?? 0;
+  const itemCount = user ? cart?.numOfCartItems ?? cart?.data?.products?.length ?? 0 : 0 ;
+  const wishCount = user ? wishList?.count ?? 0 : 0;
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
