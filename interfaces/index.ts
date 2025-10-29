@@ -22,6 +22,14 @@ export interface IProduct {
     _id?: string;
   };
 }
+export interface ICategory {
+  createdAt?: string;
+  image?: string;
+  name: string;
+  slug?: string;
+  updatedAt?: string;
+  _id?: string;
+}
 export interface IAxiosError {
   message?: string;
 }

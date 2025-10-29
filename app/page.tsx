@@ -26,6 +26,7 @@ export default function Home() {
     queryFn: async () => {
       try {
         const { data: res } = await api.get("/categories");
+        console.log(res)
         return res.data ?? [];
       } catch (error) {
         const AxiosErr = error as AxiosError<IAxiosError>;
