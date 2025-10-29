@@ -17,6 +17,7 @@ import Loading from "@/components/ui/Loading";
 import ProductCard from "../_components/ProductCard";
 import { api } from "@/config/api.config";
 import { IAxiosError, IProduct } from "@/interfaces";
+import Link from "next/link";
 
 // ========================
 // Types
@@ -196,12 +197,13 @@ const Products = () => {
         {/* Product Cards */}
         {isProdSuccess &&
           data.products?.map((product) => (
-            <div
+             <Link
+                  href={`/products/${product.id}`}
               key={product.id}
               className="hover:scale-105 transition-transform duration-300"
             >
               <ProductCard product={product} />
-            </div>
+            </Link>
           ))}
       </div>
 

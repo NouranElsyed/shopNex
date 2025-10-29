@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/input-group";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 export default function Home() {
   // Queries
@@ -26,7 +27,7 @@ export default function Home() {
     queryFn: async () => {
       try {
         const { data: res } = await api.get("/categories");
-        console.log(res)
+        console.log(res);
         return res.data ?? [];
       } catch (error) {
         const AxiosErr = error as AxiosError<IAxiosError>;
@@ -113,7 +114,7 @@ export default function Home() {
             <p className="font-semibold text-3xl text-[#98c757] self-start">
               Products:
             </p>
-           
+
             {
               <div
                 className={`w-5/7 grid grid-cols-1 gap-10 mx-15
@@ -125,12 +126,13 @@ export default function Home() {
               >
                 {isProdSuccess &&
                   products.map((product: IProduct) => (
-                    <div
-                      className="hover:scale-101 transition-all duration-300"
+                    <Link
+                      href={`/products/${product.id}`}
                       key={product.id}
+                      className="hover:scale-101 transition-all duration-300"
                     >
                       <ProductCard product={product} />
-                    </div>
+                    </Link>
                   ))}
               </div>
             }

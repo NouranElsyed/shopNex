@@ -1,14 +1,19 @@
+"use client";
+
 import AddToCart from "@/components/ui/customButton/AddToCart";
 import RatingStars from "@/components/ui/RatingStars";
 import { IProduct } from "@/interfaces";
 import { useWishListStore } from "@/store/wishList.store";
 import { truncateText } from "@/utils/truncateText";
-import { Heart } from "lucide-react";
+import { Heart, ChevronDown } from "lucide-react";
 import Image from "next/image";
-import { useMemo } from "react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+
 interface IProps {
   product: IProduct;
 }
+
 const ProductCard = ({ product }: IProps) => {
   const {
     id,
@@ -16,59 +21,99 @@ const ProductCard = ({ product }: IProps) => {
     title,
     description,
     price,
-    ratingsQuantity,
     ratingsAverage,
+    ratingsQuantity,
   } = product;
+
   const { toggleWishList, wishList } = useWishListStore();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const inWishList = useMemo(
-    () => wishList?.data?.some((item) => item.id === product.id),
-    [wishList, product.id]
+    () => wishList?.data?.some((item) => item.id === id),
+    [wishList, id]
   );
+
   return (
-    <div className="product relative flex flex-col justify-between rounded-xl overflow-hidden h-full border-1 transition-all duration-500 border-[#79ac318a] hover:shadow-md hover:shadow-[#79ac31] ">
-      <div className="flex flex-col w-full items-center">
-        <div className="relative w-full h-[250px]  overflow-hidden">
-          <Image fill src={`${imageCover}`} alt={title}></Image>
+    <Link
+      href={`/products/${id}`}
+      className="group block rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+      aria-label={`View details of ${title}`}
+    >
+      <article className="flex flex-col h-full">
+        <div className="relative aspect-square bg-gray-50 dark:bg-gray-900 overflow-hidden">
+          <Image
+            src={imageCover}
+            alt={title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleWishList(id);
+            }}
+            aria-label={inWishList ? "Remove from wishlist" : "Add to wishlist"}
+            className="absolute top-3 right-3 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all z-10"
+          >
+            <Heart
+              size={20}
+              className={`transition-all ${
+                inWishList
+                  ? "fill-red-500 text-red-500 scale-110"
+                  : "text-gray-600 dark:text-gray-300 hover:text-red-500"
+              }`}
+            />
+          </button>
         </div>
-        <h3 className="my-3 font-semibold text-center px-7">{title}</h3>
-      </div>
-      <div className="text-center w-8/10 mx-auto">
-        <p className="text-gray-600 text-sm">
-          {truncateText(description, 45)}{" "}
-          <span className="cursor-pointer text-[#79ac31] font-semibold ">
-            ...see more
-          </span>
-        </p>
-      </div>
-      <div className="flex flex-col mx-7">
-        <p className="flex justify-between my-3">
-          <span className="font-semibold">Price:</span>
-          <span>
-            {price} <span className="text-amber-400">$</span>{" "}
-          </span>
-        </p>
-        <RatingStars
-          rating={ratingsAverage}
-          ratingsQuantity={ratingsQuantity}
-        ></RatingStars>
-        <AddToCart productId={id}></AddToCart>
-      </div>
-      {inWishList ? (
-        <Heart
-          fill="#db1a00"
-          size={27}
-          onClick={() => toggleWishList(id)}
-          className="absolute top-3 right-3 text-[#db1a00] heart opacity-0"
-        />
-      ) : (
-        <Heart
-          onClick={() => toggleWishList(id)}
-          size={27}
-          className="absolute top-3 right-3 text-[#79ac31] hover:text-[#db1a00] heart opacity-0"
-        />
-      )}
-    </div>
+
+        <div className="flex flex-col flex-1 p-4 space-y-3">
+          <h3 className="font-semibold text-lg text-gray-900 dark:text-white line-clamp-2 group-hover:text-[#79ac31] transition-colors">
+            {title}
+          </h3>
+
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {isExpanded ? description : truncateText(description, 60)}
+            {description.length > 60 && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsExpanded(!isExpanded);
+                }}
+                className="ml-1 text-[#79ac31] font-medium text-xs hover:underline inline-flex items-center gap-1"
+                aria-label={isExpanded ? "Show less" : "Show more"}
+              >
+                {isExpanded ? "less" : "more"}
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform ${
+                    isExpanded ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+            )}
+          </p>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-bold text-[#79ac31]">${price}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <RatingStars
+              rating={ratingsAverage}
+              ratingsQuantity={ratingsQuantity}
+            />
+          </div>
+
+          <div className="mt-auto pt-2 text-center">
+            <AddToCart productId={id} />
+          </div>
+        </div>
+      </article>
+    </Link>
   );
 };
 
