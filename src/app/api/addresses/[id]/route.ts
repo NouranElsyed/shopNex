@@ -6,7 +6,7 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -15,12 +15,12 @@ export async function DELETE(
       console.warn("❌ No access token found in session");
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+    const { id } = await params;
+    console.log("🧨 Deleting address:", id);
 
-    console.log("🧨 Deleting address:", params.id);
-
-    const res = await api.delete(`/addresses/${params.id}`, {
+    const res = await api.delete(`/addresses/${id}`, {
       headers: { token: session.accessToken },
-      validateStatus: () => true, // علشان نقرأ الاستجابة مهما كانت
+      validateStatus: () => true,
     });
 
     console.log("📡 Backend DELETE status:", res.status);
