@@ -9,7 +9,7 @@ import Loading from "../components/ui/Loading";
 
 export default function Home() {
   const { data: categories = [], isLoading: isCatLoading } = useCategories();
-  const { data: products = [], isLoading: isProdLoading } = useProducts(4, 12);
+  const { data: products = [], isLoading: isProdLoading } = useProducts(4);
   console.log(products);
   if (isCatLoading || isProdLoading) return <Loading />;
 
