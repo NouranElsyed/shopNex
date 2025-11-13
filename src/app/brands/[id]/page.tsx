@@ -25,7 +25,6 @@ const BrandDetailsPage = () => {
   const {
     data: productsRes,
     isLoading: prodLoading,
-    isError: prodError,
   } = useQuery({
     queryKey: ["products", "brand", id],
     queryFn: async () => {
