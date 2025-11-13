@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       { shippingAddress },
       { headers: { token: session.accessToken } }
     );
-console.log("postcheeesckout================>: ",res.data)
+
 
 if(res.data.status==="success"){
  await api.delete("/cart",{

@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ICategory, IProduct } from '@/src/interfaces';
+import {  IProduct } from '@/src/interfaces';
 import { api } from '@/src/config/api.config';
 import Loading from '@/src/components/ui/Loading';
 import ProductCard from '@/src/components/product/ProductCard';
@@ -20,7 +20,7 @@ const CategoryDetails = () => {
     isError: catError,
   } = useQuery({
     queryKey: ['category', id],
-    queryFn: async (): Promise<ICategory> => {
+    queryFn: async ()=> {
       const { data } = await api.get(`/categories/${id}`);
       return data.data;
     },

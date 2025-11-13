@@ -9,7 +9,7 @@ import { api } from "@/src/config/api.config";
 import { IAxiosError, IBrand } from "@/src/interfaces";
 import Loading from "@/src/components/ui/Loading";
 
-const fetchBrands = async (): Promise<IBrand[]> => {
+const fetchBrands = async () => {
   try {
     const { data: res } = await api.get("/brands");
     return res.data ?? [];
