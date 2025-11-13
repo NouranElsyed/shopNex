@@ -84,7 +84,7 @@ const ProductCard = ({ product }: IProps) => {
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-
+{session?.user &&
         
           <button
             onClick={handleWishlistClick}
@@ -104,7 +104,7 @@ const ProductCard = ({ product }: IProps) => {
               fill={isInWishlist(id) ? "currentColor" : "none"}
               className={`transition-all ${isWishlistLoading ? "animate-pulse" : ""}`}
             />
-          </button>
+          </button>}
         </div>
 
         <div className="flex flex-col flex-1 p-4 space-y-3">
