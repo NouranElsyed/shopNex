@@ -5,12 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import Loading from "@/src/components/ui/Loading";
 import EntityDetails from "@/src/components/common/EntityDetails";
-import { fetchBrandById } from "@/src/services/api.service";
+import { fetchBrandById } from "@/src/services/publicGet.service";
 import { api } from "@/src/config/api.config";
 
 const BrandDetailsPage = () => {
   const { id } = useParams();
-
 
   const {
     data: brand,
@@ -22,16 +21,13 @@ const BrandDetailsPage = () => {
     enabled: !!id,
   });
 
-  const {
-    data: productsRes,
-    isLoading: prodLoading,
-  } = useQuery({
+  const { data: productsRes, isLoading: prodLoading } = useQuery({
     queryKey: ["products", "brand", id],
     queryFn: async () => {
       const params = new URLSearchParams({
         page: "1",
         limit: "12",
-        "brand[in]": id as string, 
+        "brand[in]": id as string,
       });
       const { data } = await api.get(`/products?${params}`);
       return data;
@@ -39,9 +35,7 @@ const BrandDetailsPage = () => {
     enabled: !!id,
   });
 
-
   if (brandLoading || prodLoading) return <Loading />;
-
 
   if (brandError || !brand) {
     toast.error("Brand not found");

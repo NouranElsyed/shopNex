@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "@/src/services/api.service";
+import { fetchProducts } from "@/src/services/publicGet.service";
 
 export const useAllProducts = () => {
   return useQuery({
     queryKey: ["all-products"],
     queryFn: async () => {
-      const all: any[] = [];
+      const all = [];
       let page = 1;
       let hasMore = true;
 
@@ -20,7 +18,6 @@ export const useAllProducts = () => {
 
       return all;
     },
-    staleTime: Infinity,
-    gcTime: Infinity,
+    staleTime: 5 * 60 * 1000,
   });
 };

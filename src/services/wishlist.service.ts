@@ -1,11 +1,11 @@
-
 export const wishlistService = {
   getWishlist: async () => {
     const res = await fetch("/api/wishlist", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", 
+      credentials: "include",
     });
+    console.log("getWishlist ===>(in wishlist Service)", res);
     if (!res.ok) throw new Error("Failed to fetch wishlist");
     return res.json();
   },
@@ -15,8 +15,9 @@ export const wishlistService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ productId }),
-      credentials: "include", 
+      credentials: "include",
     });
+    console.log("addToWishlist ===>(in wishlist Service)", res);
     if (!res.ok) {
       const error = await res.json();
       throw new Error(error.message || "Add failed");
@@ -31,6 +32,7 @@ export const wishlistService = {
       body: JSON.stringify({ productId }),
       credentials: "include",
     });
+    console.log("removeFromWishlist ===>(in wishlist Service)", res);
     if (!res.ok) {
       const error = await res.json();
       throw new Error(error.message || "Remove failed");

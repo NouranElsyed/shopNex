@@ -3,65 +3,57 @@
 import { motion, HTMLMotionProps } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { ReactNode } from "react";
-import { buttonVariants } from "../button";
-import { cn } from "@/src/lib/utils";
 
-interface AnimatedButtonProps extends HTMLMotionProps<"button"> {
+type AnimatedButtonProps = {
   children: ReactNode;
-  variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link";
-  size?:
-    | "default"
-    | "sm"
-    | "lg"
-    | "icon"
-    | "icon-sm"
-    | "icon-lg";
+  type?: "primary" | "secondary";
+  size?: "large" | "small";
   loading?: boolean;
-}
+  disabled?: boolean;
+  className?: string;
+} & HTMLMotionProps<"button">;
 
-export const AnimatedButton = ({
+export  function AnimatedButton({
   children,
-  className,
-  variant = "default",
-  size = "default",
+  size = "large",
   loading = false,
   disabled = false,
-  type = "button",
-  ...motionProps
-}: AnimatedButtonProps) => {
+  className = "",
+  ...props
+}: AnimatedButtonProps) {
   const isDisabled = disabled || loading;
+
+  const base =
+    "relative inline-flex items-center justify-center font-medium transition";
+
+  // const typeClasses =
+  //   type === "primary"
+  //     ? "bg-cyan-800 text-white hover:bg-cyan-700"
+  //     : "bg-transparent border-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white";
+
+  const sizeClasses =
+    size === "large"
+      ? "px-6 py-3 rounded-xl text-base"
+      : "px-3 py-2 rounded-lg text-sm";
 
   return (
     <motion.button
-      // Animation
-      whileHover={{ scale: isDisabled ? 1 : 1.02 }}
+      whileHover={{ scale: isDisabled ? 1 : 1.03 }}
       whileTap={{ scale: isDisabled ? 1 : 0.96 }}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
-
-      // Styles
-      className={cn(
-        buttonVariants({ variant, size }),
-        "relative flex items-center justify-center gap-2",
-        isDisabled && "cursor-not-allowed opacity-60",
-        className
-      )}
-
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
       disabled={isDisabled}
-      type={type}
-      {...motionProps}
+      className={`${base}  ${sizeClasses} ${
+        isDisabled ? "opacity-60 cursor-not-allowed" : ""
+      } ${className}`}
+      {...props}
     >
       {loading && (
         <Loader2 className="absolute h-4 w-4 animate-spin" />
       )}
+
       <span className={loading ? "opacity-0" : "opacity-100"}>
         {children}
       </span>
     </motion.button>
   );
-};
+}

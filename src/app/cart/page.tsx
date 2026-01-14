@@ -34,10 +34,10 @@ export default function CartPage() {
       : `${formatPrice(cart.totalCartPrice)} EGP`;
 
   // 🔍 debug log
-  console.log("🛒 Cart Debug Info");
-  console.log("Products count:", products.length);
-  console.log("Cart data:", cart);
-  console.log("-----------------------------------");
+  // console.log("🛒 Cart Debug Info");
+  // console.log("ProductItems:", products.length);
+  // console.log("Cart data:", cart);
+  // console.log("-----------------------------------");
 
   return (
     <div className="w-10/12 lg:w-full max-w-4xl mx-auto mt-10 mb-20 p-6 bg-white rounded-2xl shadow-lg border border-[#79ac3123]">
@@ -115,16 +115,12 @@ export default function CartPage() {
                   category?: { name: string };
                 };
               }) => {
+                console.log(item);
                 const { _id, count, product, price } = item;
                 const isPending = isPendingForProduct(product.id);
-                console.log("Product:", product.title);
-                console.log(" - product.id:", product.id);
-                console.log(" - item._id:", _id);
                 console.log(" - count:", count);
-                console.log(" - isPending:", isPending);
-                console.log("-----------------------------------");
 
-                const unitPrice = price / count;
+                const unitPrice = price ;
                 const itemTotal = unitPrice * count;
                 const formattedItemTotal = formatPrice(itemTotal);
 
@@ -171,8 +167,9 @@ export default function CartPage() {
                             whileTap={
                               isPending || count === 1 ? {} : { scale: 0.85 }
                             }
-                            disabled={isPending || count === 1}
+                            disabled={count === 1}
                             onClick={() => {
+                              console.log("click");
                               console.log(
                                 "🟠 Minus clicked for:",
                                 product.title
@@ -183,27 +180,33 @@ export default function CartPage() {
                                 action: "minus",
                               });
                             }}
-                            className={`p-1.5 rounded-lg border transition-all ${
-                              count > 1 && !isPending
-                                ? "border-green-600 text-green-600 hover:bg-green-600 hover:text-white cursor-pointer"
-                                : "border-gray-300 text-gray-400 cursor-not-allowed"
-                            }`}
+                            className={`p-1.5 rounded-lg border transition-all 
+                              ${count === 1 &&    
+                                " border-gray-300 text-gray-400 cursor-not-allowed"||
+                                "  border-green-600 text-green-600 hover:bg-green-600 hover:text-white cursor-pointer"
+                             }
+                            `}
                           >
                             <Minus size={16} />
                           </motion.button>
 
                           <span
-                            className={`font-bold text-lg w-10 text-center ${
-                              isPending ? "text-gray-400" : "text-gray-900"
-                            }`}
+                            className={`font-bold text-lg w-10 text-center 
+                            
+                              text-gray-900
+                           `}
                           >
-                            {isPending ? "..." : count}
+                            {
+                         
+                              count
+                            }
                           </span>
 
                           <motion.button
                             whileTap={isPending ? {} : { scale: 0.85 }}
-                            disabled={isPending}
                             onClick={() => {
+                              console.log("click");
+
                               console.log(
                                 "🟢 Plus clicked for:",
                                 product.title
@@ -214,10 +217,7 @@ export default function CartPage() {
                                 action: "plus",
                               });
                             }}
-                            className={`p-1.5 rounded-lg transition-all border ${
-                              !isPending
-                                ? "border-green-600 text-green-600 hover:bg-green-600 hover:text-white cursor-pointer"
-                                : "border-gray-300 text-gray-400 cursor-not-allowed"
+                            className={`p-1.5 rounded-lg transition-all border border-green-600 text-green-600 hover:bg-green-600 hover:text-white cursor-pointer
                             }`}
                           >
                             <Plus size={16} />
@@ -248,17 +248,13 @@ export default function CartPage() {
                           whileTap={isPending ? {} : { scale: 0.9 }}
                           className="px-3 py-1.5 border-red-600 text-red-600 hover:bg-red-600 hover:text-white text-sm rounded-lg flex items-center gap-1.5 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                          {isPending ? (
-                            <span className="flex gap-2 items-center">
-                              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              Removing...
-                            </span>
-                          ) : (
+                        
+                            
                             <span className="flex gap-2 items-center">
                               <Trash2 size={14} />
                               Remove
                             </span>
-                          )}
+                        
                         </AnimatedButton>
                       </div>
                     </div>

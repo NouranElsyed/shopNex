@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "@/src/services/api.service";
+import { fetchProducts } from "@/src/services/publicGet.service";
 
 const PAGE_SIZE = 16;
 

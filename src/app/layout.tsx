@@ -6,6 +6,7 @@ import AuthSessionProvider from "./providers/AuthSessionProvider";
 import ReactQueryProvider from "./providers/ReactQueryProvider";
 import Navbar from "../components/layout/navbar/Navbar";
 import Footer from "../components/layout/Footer";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 const oswald = Oswald({
   variable: "--font-geist-sans",
@@ -49,6 +50,7 @@ export default function RootLayout({
           <Navbar></Navbar>
           <main className="flex-1 flex flex-col">{children}</main>
           <Footer />
+             <ReactQueryDevtools initialIsOpen={true} />
         </ReactQueryProvider>
          </AuthSessionProvider>
       </body>

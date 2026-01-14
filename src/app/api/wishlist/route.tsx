@@ -31,6 +31,7 @@ const session = await getServerSession(authOptions);
     const res = await api.get("/wishlist", {
       headers: { token: session.accessToken },
     });
+    console.log(res.data)
     return NextResponse.json(res.data);
   } catch (error: any) {
     return NextResponse.json(

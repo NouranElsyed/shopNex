@@ -10,79 +10,95 @@ export function useCart() {
     queryFn: cartService.getCart,
     staleTime: 1000 * 30,
   });
-const updateCountMutation = useMutation({
-  mutationFn: ({
-    productId,
-    count,
-    action,
-  }: {
-    productId: string;
-    count: number;
-    action: "plus" | "minus";
-  }) => cartService.updateCount(productId, count, action),
+  let pendingMutations: string[] = [];
 
-  onMutate: async ({ productId, count, action }) => {
-    await queryClient.cancelQueries({ queryKey: ["cart"] });
+  const updateCountMutation = useMutation({
+    mutationFn: ({
+      productId,
+      count,
+      action,
+    }: {
+      productId: string;
+      count: number;
+      action: "plus" | "minus";
+    }) => cartService.updateCount(productId, count, action),
 
-    const previous = queryClient.getQueryData<ICart>(["cart"]);
-    if (!previous?.data) return { previous };
+    onMutate: async ({ productId, action }) => {
+      await queryClient.cancelQueries({ queryKey: ["cart"] });
+      pendingMutations.push(productId);
+      console.log(action);
+      const previous = queryClient.getQueryData<ICart>(["cart"]);
+      console.log("previous=====>", previous);
 
-    const productItem = previous.data.products.find(
-      (p) => p.product.id === productId
-    );
-    if (!productItem) return { previous };
+      // if (!previous?.data) return { previous };
 
-    const price = productItem.product.price;
+      const productItem = previous!.data.products.find(
+        (p) => p.product.id === productId
+      );
+      if (!productItem) return { previous };
+      console.log(productItem);
 
-    const newCount =
-      action === "plus" ? count + 1 : Math.max(1, count - 1);
+      const uintPrice = productItem.price;
 
-    const priceChange = action === "plus" ? price : -price;
+      const newCount =
+        action === "plus"
+          ? productItem.count + 1
+          : Math.max(1, productItem.count - 1);
 
-    queryClient.setQueryData(["cart"], {
-      ...previous,
-      data: {
-        ...previous.data,
-        products: previous.data.products.map((p) =>
-          p.product.id === productId
-            ? { ...p, count: newCount }
-            : p
-        ),
-        totalCartPrice:
-          previous.data.totalCartPrice + priceChange,
-      },
-    });
+      const priceChange = action === "plus" ? uintPrice : -uintPrice;
 
-    return { previous, newCount };
-  },
-
-  onError: (_err, _vars, context) => {
-    if (context?.previous) {
-      queryClient.setQueryData(["cart"], context.previous);
-    }
-  },
-
-  onSuccess: async(data, vars, ctx) => {
-    if (data?.data) {
-      queryClient.setQueryData(["cart"], (old: ICart | undefined) => {
-        if (!old?.data) return old;
-        return {
-          ...old,
-          data: {
-            ...old.data,
-            products: old.data.products.map((p) =>
-              p.product.id === vars.productId
-                ? { ...p, count: ctx?.newCount ?? p.count }
-                : p
-            ),
-          },
-        };
+      queryClient.setQueryData(["cart"], {
+        ...previous,
+        data: {
+          ...previous!.data,
+          products: previous!.data.products.map((p) =>
+            p.product.id === productId ? { ...p, count: newCount } : p
+          ),
+          totalCartPrice: previous!.data.totalCartPrice + priceChange,
+        },
       });
-    }
 
-  await queryClient.invalidateQueries({ queryKey: ["cart"] });
-  },
-});
+      return { previous, newCount };
+    },
+
+    onError: (_err, _vars, context) => {
+      if (pendingMutations.length === 0) {
+        if (context?.previous) {
+          queryClient.setQueryData(["cart"], context.previous);
+        }
+      } else {
+        console.log("Waiting for other mutations to finish...");
+      }
+    },
+    onSettled: ({ productId }) => {
+      pendingMutations = pendingMutations.filter((id) => id !== productId);
+    },
+
+    onSuccess: async (data, vars, ctx) => {
+      if (pendingMutations.length === 0) {
+        if (data?.data) {
+          queryClient.setQueryData(["cart"], (old: ICart | undefined) => {
+            if (!old?.data) return old;
+            return {
+              ...old,
+              data: {
+                ...old.data,
+                products: old.data.products.map((p) =>
+                  p.product.id === vars.productId
+                    ? { ...p, count: ctx?.newCount ?? p.count }
+                    : p
+                ),
+              },
+            };
+          });
+        }
+      } else {
+        console.log("Waiting for other mutations to finish...");
+      }
+
+      // await queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
   const addToCartMutation = useMutation({
     mutationFn: (productId: string) => cartService.addCart(productId),
 
@@ -216,18 +232,14 @@ const updateCountMutation = useMutation({
     },
   });
 
-  
-
   return {
     cart: cart?.data,
     isLoading,
     isCartEmpty: (cart?.data?.products?.length ?? 0) === 0,
 
-
     updateCount: updateCountMutation.mutate,
     isUpdatingCount: updateCountMutation.isPending,
 
- 
     addToCart: addToCartMutation.mutate,
     isAddingToCart: (productId: string): boolean =>
       addToCartMutation.isPending && addToCartMutation.variables === productId,
@@ -235,10 +247,8 @@ const updateCountMutation = useMutation({
     deleteItem: deleteItemMutation.mutate,
     isDeletingItem: deleteItemMutation.isPending,
 
-
     clearCart: clearCartMutation.mutate,
     isClearing: clearCartMutation.isPending,
-
 
     isPendingForProduct: (productId: string): boolean => {
       return (
